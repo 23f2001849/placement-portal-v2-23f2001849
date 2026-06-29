@@ -1,13 +1,15 @@
 import os
 from flask import Flask
 from extensions import db, jwt
+import models
+from models import User, CompanyProfile, StudentProfile, PlacementDrive, Application, Placement, NotificationLog, ExportJob
+
 from config import(
     SECRET_KEY,
     SQLALCHEMY_DATABASE_URI,
     SQLALCHEMY_TRACK_MODIFICATIONS,
     DEBUG
 )
-import models
 
 def create_app():
     app = Flask(__name__)
@@ -23,24 +25,22 @@ def create_app():
 
     with app.app_context():
         os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok = True)
-        db.create_all
+        db.create_all()
         seed_admin()
 
     return app
-
-from models import User, CompanyProfile, StudentProfile, PlacementDrive, Application, Placement, NotificationLog, ExportJob
 
 def seed_admin():
     from models.user import User
     from werkzeug.security import generate_password_hash
 
     # Check if admin user already exists
-    admin = User.query.filter_by(username='admin').first()
+    admin = User.query.filter_by(role='admin').first()
     if not admin:
         # Create a new admin user
         admin = User(
             email='admin@gmail.com',
-            password=generate_password_hash('admin'),  
+            password_hash=generate_password_hash('admin'),  
             role='admin'
         )
         db.session.add(admin)
