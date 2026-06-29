@@ -1,0 +1,145 @@
+swagger: "2.0"
+info:
+  title: Placement Portal V2 API
+  description: API documentation for Placement Portal V2 - MAD-II Jan 2026
+  version: "1.0"
+
+host: localhost:5000
+basePath: /
+schemes:
+  - http
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "JWT token. Format: Bearer <token>"
+
+paths:
+  /api/register/student:
+    post:
+      tags:
+        - Auth
+      summary: Register a new student account
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+              - name
+            properties:
+              email:
+                type: string
+                example: student@college.edu
+              password:
+                type: string
+                example: secret123
+              name:
+                type: string
+                example: Krishna Kumar
+      responses:
+        201:
+          description: Student registered successfully
+        400:
+          description: Missing fields or invalid input
+        409:
+          description: Email already registered
+
+  /api/register/company:
+    post:
+      tags:
+        - Auth
+      summary: Register a new company account
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+              - name
+            properties:
+              email:
+                type: string
+                example: hr@company.com
+              password:
+                type: string
+                example: secret123
+              name:
+                type: string
+                example: Infosys Ltd
+      responses:
+        201:
+          description: Company registered, pending admin approval
+        400:
+          description: Missing fields or invalid input
+        409:
+          description: Email already registered
+
+  /api/login:
+    post:
+      tags:
+        - Auth
+      summary: Login and receive JWT tokens
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                example: admin@gmail.com
+              password:
+                type: string
+                example: admin
+      responses:
+        200:
+          description: Login successful, returns access and refresh tokens
+        401:
+          description: Invalid credentials
+        403:
+          description: Account blacklisted or company not approved
+
+  /api/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout and invalidate current access token
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Logged out successfully
+        401:
+          description: Missing or invalid token
+
+  /api/me:
+    get:
+      tags:
+        - Auth
+      summary: Get current logged-in user info
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Returns user email and role
+        401:
+          description: Missing or invalid token

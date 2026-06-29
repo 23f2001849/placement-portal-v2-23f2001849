@@ -14,17 +14,22 @@ from config import(
 def create_app():
     app = Flask(__name__)
 
-    # Load config into app
     app.config['SECRET_KEY'] = SECRET_KEY
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 
-    # Connect extensions to app
     db.init_app(app)
     jwt.init_app(app)
 
+    import yaml
+    from flasgger import Swagger
+    yaml_path = os.path.join(app.root_path, 'api.yaml')
+    with open(yaml_path, 'r') as f:
+        template = yaml.safe_load(f)
+    Swagger(app, template=template)
+
     with app.app_context():
-        os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok = True)
+        os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
         db.create_all()
         seed_admin()
 
