@@ -7,6 +7,7 @@ from config import(
     SQLALCHEMY_TRACK_MODIFICATIONS,
     DEBUG
 )
+import models
 
 def create_app():
     app = Flask(__name__)
@@ -26,6 +27,8 @@ def create_app():
         seed_admin()
 
     return app
+
+from models import User, CompanyProfile, StudentProfile, PlacementDrive, Application, Placement, NotificationLog, ExportJob
 
 def seed_admin():
     from models.user import User
