@@ -12,3 +12,8 @@ __pycache__/
 
 # SQLite database
 *.db
+
+# Backend runtime
+backend/instance/
+backend/__pycache__/
+backend/models/__pycache__/
