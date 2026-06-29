@@ -1,0 +1,14 @@
+# Python environment
+venv/
+
+# Python cache — generated on first run
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment secrets
+.env
+
+# SQLite database
+*.db
