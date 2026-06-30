@@ -1,0 +1,71 @@
+import axios from 'axios'
+
+const apiClient = axios.create({
+  baseURL: '/',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+let isRefreshing = false
+let refreshSubscribers = []
+
+function onRefreshed(newToken) {
+  refreshSubscribers.forEach((callback) => callback(newToken))
+  refreshSubscribers = []
+}
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          refreshSubscribers.push((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`
+            resolve(apiClient(originalRequest))
+          })
+        })
+      }
+
+      originalRequest._retry = true
+      isRefreshing = true
+
+      try {
+        const refreshToken = localStorage.getItem('refresh_token')
+        const res = await axios.post('/api/refresh', {}, {
+          headers: { Authorization: `Bearer ${refreshToken}` }
+        })
+
+        const newAccessToken = res.data.access_token
+        localStorage.setItem('access_token', newAccessToken)
+
+        isRefreshing = false
+        onRefreshed(newAccessToken)
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+        return apiClient(originalRequest)
+      } catch (refreshError) {
+        isRefreshing = false
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        window.location.href = '/login'
+        return Promise.reject(refreshError)
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
+
+export default apiClient
