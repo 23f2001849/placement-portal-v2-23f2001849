@@ -7,7 +7,7 @@ class StudentProfile(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique= True, nullable = False)
     name = db.Column(db.String(120), nullable = False, index=True)
-    roll_number = db.Column(db.String(50), unique=True, nullable = False, index=True)
+    roll_number = db.Column(db.String(50), unique=True, index=True)
     department = db.Column(db.String(100), index=True)
     phone = db.Column(db.String(20))
     cgpa = db.Column(db.Float)
