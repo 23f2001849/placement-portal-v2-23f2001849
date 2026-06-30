@@ -118,6 +118,19 @@ paths:
         403:
           description: Account blacklisted or company not approved
 
+  /api/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Get a new access token using refresh token
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Returns new access token
+        401:
+          description: Invalid or expired refresh token
+
   /api/logout:
     post:
       tags:

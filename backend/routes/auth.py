@@ -123,6 +123,22 @@ def login():
         'email': user.email
     }), 200
 
+@auth_bp.route('/api/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    user_id = get_jwt_identity()
+    user = User.query.get(int(user_id))
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    additional_claims = {'role': user.role}
+    new_access_token = create_access_token(
+        identity=str(user.id),
+        additional_claims=additional_claims
+    )
+
+    return jsonify({'access_token': new_access_token}), 200
 
 @auth_bp.route('/api/logout', methods=['POST'])
 @jwt_required()
