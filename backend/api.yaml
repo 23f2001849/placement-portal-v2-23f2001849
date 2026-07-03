@@ -156,3 +156,192 @@ paths:
           description: Returns user email and role
         401:
           description: Missing or invalid token
+
+  /api/admin/dashboard:
+    get:
+      tags:
+        - Admin
+      summary: Get dashboard stats
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Total counts of students, companies, drives, applications
+
+  /api/admin/companies:
+    get:
+      tags:
+        - Admin
+      summary: List all companies, filter by status
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: status
+          type: string
+          enum: [pending, approved, rejected]
+      responses:
+        200:
+          description: List of companies
+
+  /api/admin/companies/{company_id}/approve:
+    put:
+      tags:
+        - Admin
+      summary: Approve a company
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: company_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Company approved
+        404:
+          description: Company not found
+
+  /api/admin/companies/{company_id}/reject:
+    put:
+      tags:
+        - Admin
+      summary: Reject a company
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: company_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Company rejected
+        404:
+          description: Company not found
+
+  /api/admin/companies/{company_id}/blacklist:
+    put:
+      tags:
+        - Admin
+      summary: Blacklist a company and close all their drives
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: company_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Company blacklisted and drives closed
+        404:
+          description: Company not found
+
+  /api/admin/students:
+    get:
+      tags:
+        - Admin
+      summary: List all students, searchable by name/roll/email
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: q
+          type: string
+      responses:
+        200:
+          description: List of students
+
+  /api/admin/students/{student_id}/blacklist:
+    put:
+      tags:
+        - Admin
+      summary: Blacklist a student
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: student_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Student blacklisted
+        404:
+          description: Student not found
+
+  /api/admin/drives:
+    get:
+      tags:
+        - Admin
+      summary: List all drives, filter by status
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: status
+          type: string
+          enum: [pending, approved, rejected, closed]
+      responses:
+        200:
+          description: List of drives
+
+  /api/admin/drives/{drive_id}/approve:
+    put:
+      tags:
+        - Admin
+      summary: Approve a pending drive
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Drive approved
+        400:
+          description: Drive not in pending state
+        404:
+          description: Drive not found
+
+  /api/admin/drives/{drive_id}/reject:
+    put:
+      tags:
+        - Admin
+      summary: Reject a pending drive
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Drive rejected
+        400:
+          description: Drive not in pending state
+        404:
+          description: Drive not found
+
+  /api/admin/applications:
+    get:
+      tags:
+        - Admin
+      summary: List all applications, filterable by drive or student
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: drive_id
+          type: integer
+        - in: query
+          name: student_id
+          type: integer
+      responses:
+        200:
+          description: List of applications
+  
