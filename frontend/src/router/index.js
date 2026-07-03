@@ -19,6 +19,30 @@ const routes = [
     meta: { requiresAuth: true, role: 'admin' }
   },
   {
+    path: '/admin/companies',
+    name: 'admin-companies',
+    component: () => import('@/views/admin/ManageCompanies.vue'),
+    meta: { requiresAuth: true, role: 'admin' }
+  },
+  {
+    path: '/admin/students',
+    name: 'admin-students',
+    component: () => import('@/views/admin/ManageStudents.vue'),
+    meta: { requiresAuth: true, role: 'admin' }
+  },
+  {
+    path: '/admin/drives',
+    name: 'admin-drives',
+    component: () => import('@/views/admin/ManageDrives.vue'),
+    meta: { requiresAuth: true, role: 'admin' }
+  },
+  {
+    path: '/admin/applications',
+    name: 'admin-applications',
+    component: () => import('@/views/admin/ViewApplications.vue'),
+    meta: { requiresAuth: true, role: 'admin' }
+  },
+  {
     path: '/company/dashboard',
     name: 'company-dashboard',
     component: () => import('@/views/company/Dashboard.vue'),
