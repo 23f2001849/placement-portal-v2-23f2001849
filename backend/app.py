@@ -35,6 +35,8 @@ def create_app():
     Swagger(app, template=template)
     from routes.auth import auth_bp
     app.register_blueprint(auth_bp)
+    from routes.admin import admin_bp
+    app.register_blueprint(admin_bp)
 
     with app.app_context():
         os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
