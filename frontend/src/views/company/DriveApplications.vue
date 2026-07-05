@@ -9,84 +9,102 @@
     <div v-else-if="error" class="alert alert-danger">{{ error }}</div>
 
     <div v-else>
-      <div class="mb-4">
-        <h5>{{ data.company_name }}</h5>
-        <span class="badge bg-success">{{ data.approval_status }}</span>
-        <span class="ms-3 text-muted">Total Drives: {{ data.total_drives }}</span>
-      </div>
-
-      <div class="mb-3">
-        <RouterLink to="/company/drives/create" class="btn btn-primary me-2">
-          Create New Drive
-        </RouterLink>
-        <RouterLink to="/company/profile" class="btn btn-outline-secondary">
-          Edit Profile
-        </RouterLink>
-      </div>
-
-      <div v-if="data.drives && data.drives.length === 0" class="alert alert-info">
-        No drives created yet.
+      <div v-if="applications.length === 0" class="alert alert-info">
+        No applications yet for this drive.
       </div>
 
       <table v-else class="table table-bordered table-hover">
         <thead class="table-dark">
           <tr>
-            <th>Job Title</th>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Department</th>
+            <th>CGPA</th>
             <th>Status</th>
-            <th>Applicants</th>
+            <th>Remark</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="drive in data.drives" :key="drive.id">
-            <td>{{ drive.job_title }}</td>
+          <tr v-for="app in applications" :key="app.id">
+            <td>{{ app.student_name }}</td>
+            <td>{{ app.roll_number || '—' }}</td>
+            <td>{{ app.department || '—' }}</td>
+            <td>{{ app.cgpa ?? '—' }}</td>
             <td>
-              <span :class="statusBadge(drive.status)">{{ drive.status }}</span>
+              <span :class="statusBadge(app.status)">{{ app.status }}</span>
             </td>
-            <td>{{ drive.applicant_count }}</td>
+            <td>{{ app.remark || '—' }}</td>
             <td>
-              <RouterLink
-                v-if="drive.status === 'pending'"
-                :to="`/company/drives/${drive.id}/edit`"
-                class="btn btn-warning btn-sm me-1"
-              >Edit</RouterLink>
-              <RouterLink
-                :to="`/company/drives/${drive.id}/applications`"
-                class="btn btn-info btn-sm"
-              >Applications</RouterLink>
+              <div v-if="app.status === 'applied'">
+                <button class="btn btn-info btn-sm me-1"
+                  @click="updateStatus(app.id, 'shortlisted')">Shortlist</button>
+                <button class="btn btn-danger btn-sm"
+                  @click="updateStatus(app.id, 'rejected')">Reject</button>
+              </div>
+              <div v-else-if="app.status === 'shortlisted'">
+                <button class="btn btn-success btn-sm me-1"
+                  @click="updateStatus(app.id, 'selected')">Select</button>
+                <button class="btn btn-danger btn-sm"
+                  @click="updateStatus(app.id, 'rejected')">Reject</button>
+              </div>
+              <span v-else class="text-muted">—</span>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <RouterLink to="/company/dashboard" class="btn btn-secondary mt-3">
+      Back to Dashboard
+    </RouterLink>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import apiClient from '@/api/client'
 
-const data = ref({})
+const route = useRoute()
+const driveId = route.params.id
+
+const applications = ref([])
 const loading = ref(true)
 const error = ref('')
 
-function statusBadge(status) {
-  return {
-    'badge bg-warning text-dark': status === 'pending',
-    'badge bg-success': status === 'approved',
-    'badge bg-danger': status === 'rejected',
-    'badge bg-secondary': status === 'closed'
-  }
-}
-
-onMounted(async () => {
+async function fetchApplications() {
+  loading.value = true
+  error.value = ''
   try {
-    const response = await apiClient.get('/api/company/dashboard')
-    data.value = response.data
+    const response = await apiClient.get(`/api/company/drives/${driveId}/applications`)
+    applications.value = response.data
   } catch (e) {
-    error.value = 'Failed to load dashboard.'
+    error.value = 'Failed to load applications.'
   } finally {
     loading.value = false
   }
-})
+}
+
+async function updateStatus(applicationId, newStatus) {
+  try {
+    await apiClient.put(`/api/company/applications/${applicationId}/status`, {
+      status: newStatus
+    })
+    await fetchApplications()
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Failed to update status.'
+  }
+}
+
+function statusBadge(status) {
+  return {
+    'badge bg-warning text-dark': status === 'applied',
+    'badge bg-info text-dark': status === 'shortlisted',
+    'badge bg-success': status === 'selected',
+    'badge bg-danger': status === 'rejected'
+  }
+}
+
+onMounted(fetchApplications)
 </script>

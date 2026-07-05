@@ -38,6 +38,12 @@
             <li class="nav-item">
               <RouterLink class="nav-link" to="/company/dashboard">Dashboard</RouterLink>
             </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/company/drives/create">New Drive</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/company/profile">Profile</RouterLink>
+            </li>
           </template>
 
           <template v-if="authStore.role === 'student'">

@@ -1,63 +1,46 @@
 <template>
-  <div>
-    <h3 class="mb-4">Company Profile</h3>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h3 class="mb-4">Company Profile</h3>
 
-    <div v-if="loading" class="text-center mt-4">
-      <div class="spinner-border" role="status"></div>
-    </div>
-
-    <div v-else-if="error" class="alert alert-danger">{{ error }}</div>
-
-    <div v-else>
-      <div class="mb-4">
-        <h5>{{ data.company_name }}</h5>
-        <span class="badge bg-success">{{ data.approval_status }}</span>
-        <span class="ms-3 text-muted">Total Drives: {{ data.total_drives }}</span>
+      <div v-if="loading" class="text-center mt-4">
+        <div class="spinner-border" role="status"></div>
       </div>
 
-      <div class="mb-3">
-        <RouterLink to="/company/drives/create" class="btn btn-primary me-2">
-          Create New Drive
-        </RouterLink>
-        <RouterLink to="/company/profile" class="btn btn-outline-secondary">
-          Edit Profile
-        </RouterLink>
-      </div>
+      <div v-else>
+        <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+        <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-      <div v-if="data.drives && data.drives.length === 0" class="alert alert-info">
-        No drives created yet.
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Company Name</label>
+          <input v-model="form.name" type="text" class="form-control" />
+        </div>
 
-      <table v-else class="table table-bordered table-hover">
-        <thead class="table-dark">
-          <tr>
-            <th>Job Title</th>
-            <th>Status</th>
-            <th>Applicants</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="drive in data.drives" :key="drive.id">
-            <td>{{ drive.job_title }}</td>
-            <td>
-              <span :class="statusBadge(drive.status)">{{ drive.status }}</span>
-            </td>
-            <td>{{ drive.applicant_count }}</td>
-            <td>
-              <RouterLink
-                v-if="drive.status === 'pending'"
-                :to="`/company/drives/${drive.id}/edit`"
-                class="btn btn-warning btn-sm me-1"
-              >Edit</RouterLink>
-              <RouterLink
-                :to="`/company/drives/${drive.id}/applications`"
-                class="btn btn-info btn-sm"
-              >Applications</RouterLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <div class="mb-3">
+          <label class="form-label">Industry</label>
+          <input v-model="form.industry" type="text" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Website</label>
+          <input v-model="form.website" type="text" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">HR Contact</label>
+          <input v-model="form.hr_contact" type="text" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea v-model="form.description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <button class="btn btn-primary me-2" @click="handleSave" :disabled="saving">
+          {{ saving ? 'Saving...' : 'Save Profile' }}
+        </button>
+        <RouterLink to="/company/dashboard" class="btn btn-secondary">Cancel</RouterLink>
+      </div>
     </div>
   </div>
 </template>
@@ -66,27 +49,48 @@
 import { ref, onMounted } from 'vue'
 import apiClient from '@/api/client'
 
-const data = ref({})
-const loading = ref(true)
-const error = ref('')
+const form = ref({
+  name: '',
+  industry: '',
+  website: '',
+  hr_contact: '',
+  description: ''
+})
 
-function statusBadge(status) {
-  return {
-    'badge bg-warning text-dark': status === 'pending',
-    'badge bg-success': status === 'approved',
-    'badge bg-danger': status === 'rejected',
-    'badge bg-secondary': status === 'closed'
-  }
-}
+const loading = ref(true)
+const saving = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
 
 onMounted(async () => {
   try {
-    const response = await apiClient.get('/api/company/dashboard')
-    data.value = response.data
+    const response = await apiClient.get('/api/company/profile')
+    const p = response.data
+    form.value = {
+      name: p.name || '',
+      industry: p.industry || '',
+      website: p.website || '',
+      hr_contact: p.hr_contact || '',
+      description: p.description || ''
+    }
   } catch (e) {
-    error.value = 'Failed to load dashboard.'
+    errorMessage.value = 'Failed to load profile.'
   } finally {
     loading.value = false
   }
 })
+
+async function handleSave() {
+  errorMessage.value = ''
+  successMessage.value = ''
+  saving.value = true
+  try {
+    await apiClient.put('/api/company/profile', form.value)
+    successMessage.value = 'Profile saved successfully.'
+  } catch (e) {
+    errorMessage.value = 'Failed to save profile.'
+  } finally {
+    saving.value = false
+  }
+}
 </script>
