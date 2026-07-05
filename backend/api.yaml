@@ -344,4 +344,191 @@ paths:
       responses:
         200:
           description: List of applications
+
+  /api/company/dashboard:
+    get:
+      tags:
+        - Company
+      summary: Get company dashboard with own drives and applicant counts
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Dashboard data
+
+  /api/company/profile:
+    get:
+      tags:
+        - Company
+      summary: Get own company profile
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Company profile
+    put:
+      tags:
+        - Company
+      summary: Update own company profile
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              industry:
+                type: string
+              website:
+                type: string
+              hr_contact:
+                type: string
+              description:
+                type: string
+      responses:
+        200:
+          description: Profile updated
+
+  /api/company/drives:
+    get:
+      tags:
+        - Company
+      summary: List own drives
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: List of drives
+    post:
+      tags:
+        - Company
+      summary: Create a new placement drive
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - job_title
+            properties:
+              job_title:
+                type: string
+              job_description:
+                type: string
+              min_cgpa:
+                type: number
+              allowed_departments:
+                type: string
+              salary_range:
+                type: string
+              location:
+                type: string
+              application_deadline:
+                type: string
+      responses:
+        201:
+          description: Drive created
+        400:
+          description: Missing job_title
+
+  /api/company/drives/{drive_id}:
+    put:
+      tags:
+        - Company
+      summary: Edit a pending drive
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Drive updated
+        400:
+          description: Drive not pending
+        404:
+          description: Drive not found
+
+  /api/company/drives/{drive_id}/close:
+    put:
+      tags:
+        - Company
+      summary: Close an active drive
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Drive closed
+        404:
+          description: Drive not found
+
+  /api/company/drives/{drive_id}/applications:
+    get:
+      tags:
+        - Company
+      summary: List applications for own drive
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: List of applications
+        404:
+          description: Drive not found
+
+  /api/company/applications/{application_id}/status:
+    put:
+      tags:
+        - Company
+      summary: Update application status with state machine enforcement
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: application_id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                enum: [shortlisted, selected, rejected]
+              remark:
+                type: string
+      responses:
+        200:
+          description: Status updated
+        400:
+          description: Invalid transition
+        403:
+          description: Not your application
+        404:
+          description: Application not found
   
