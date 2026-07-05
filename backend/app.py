@@ -37,6 +37,8 @@ def create_app():
     app.register_blueprint(auth_bp)
     from routes.admin import admin_bp
     app.register_blueprint(admin_bp)
+    from routes.company import company_bp
+    app.register_blueprint(company_bp)
 
     with app.app_context():
         os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
