@@ -144,13 +144,22 @@ def edit_drive(drive_id):
     if not data:
         return jsonify({'message': 'No data provided'}), 400
 
+    from datetime import date
+
+    if 'application_deadline' in data and data['application_deadline']:
+        try:
+            data['application_deadline'] = date.fromisoformat(data['application_deadline'])
+        except ValueError:
+            return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD'}), 400
+    elif 'application_deadline' in data and not data['application_deadline']:
+        data['application_deadline'] = None
+
     editable_fields = ['job_title', 'job_description', 'min_cgpa',
                        'allowed_departments', 'salary_range', 'location',
                        'application_deadline']
     for field in editable_fields:
         if field in data:
             setattr(drive, field, data[field])
-
     db.session.commit()
     return jsonify({'message': 'Drive updated successfully'}), 200
 
