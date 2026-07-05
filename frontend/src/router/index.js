@@ -49,6 +49,30 @@ const routes = [
     meta: { requiresAuth: true, role: 'company' }
   },
   {
+    path: '/company/drives/create',
+    name: 'company-drive-create',
+    component: () => import('@/views/company/DriveCreate.vue'),
+    meta: { requiresAuth: true, role: 'company' }
+  },
+  {
+    path: '/company/drives/:id/edit',
+    name: 'company-drive-edit',
+    component: () => import('@/views/company/DriveEdit.vue'),
+    meta: { requiresAuth: true, role: 'company' }
+  },
+  {
+    path: '/company/drives/:id/applications',
+    name: 'company-drive-applications',
+    component: () => import('@/views/company/DriveApplications.vue'),
+    meta: { requiresAuth: true, role: 'company' }
+  },
+  {
+    path: '/company/profile',
+    name: 'company-profile',
+    component: () => import('@/views/company/Profile.vue'),
+    meta: { requiresAuth: true, role: 'company' }
+  },
+  {
     path: '/student/dashboard',
     name: 'student-dashboard',
     component: () => import('@/views/student/Dashboard.vue'),

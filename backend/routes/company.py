@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, g
 from extensions import db
 from models.user import User
+from datetime import date
 from models.company import CompanyProfile
 from models.drive import PlacementDrive
 from models.application import Application
@@ -82,6 +83,14 @@ def create_drive():
     if not data or not data.get('job_title'):
         return jsonify({'message': 'job_title is required'}), 400
 
+    from datetime import date
+    deadline = None
+    if data.get('application_deadline'):
+        try:
+            deadline = date.fromisoformat(data['application_deadline'])
+        except ValueError:
+            return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
     drive = PlacementDrive(
         company_id=company.id,
         job_title=data['job_title'],
@@ -90,7 +99,7 @@ def create_drive():
         allowed_departments=data.get('allowed_departments'),
         salary_range=data.get('salary_range'),
         location=data.get('location'),
-        application_deadline=data.get('application_deadline'),
+        application_deadline=deadline,
         status='pending'
     )
     db.session.add(drive)
