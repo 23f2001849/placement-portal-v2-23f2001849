@@ -29,5 +29,7 @@ def approved_company_required(fn):
         profile = CompanyProfile.query.filter_by(user_id=int(user_id)).first()
         if not profile or profile.approval_status != 'approved':
             return jsonify({'message': 'Company not approved'}), 403
+        if profile.user.is_blacklisted:                              # ADD THIS
+            return jsonify({'message': 'Account has been suspended'}), 403
         return fn(*args, **kwargs)
     return wrapper
