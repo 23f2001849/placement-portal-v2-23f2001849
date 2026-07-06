@@ -531,4 +531,153 @@ paths:
           description: Not your application
         404:
           description: Application not found
+
+  /api/student/dashboard:
+    get:
+      tags:
+        - Student
+      summary: Get student dashboard stats
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Dashboard data
+
+  /api/student/profile:
+    get:
+      tags:
+        - Student
+      summary: Get own student profile
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Student profile
+    put:
+      tags:
+        - Student
+      summary: Update own student profile
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              roll_number:
+                type: string
+              department:
+                type: string
+              cgpa:
+                type: number
+              phone:
+                type: string
+              year_of_study:
+                type: integer
+              skills:
+                type: string
+              education:
+                type: string
+      responses:
+        200:
+          description: Profile updated
+
+  /api/student/profile/resume:
+    post:
+      tags:
+        - Student
+      summary: Upload resume PDF (max 2MB)
+      security:
+        - Bearer: []
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: resume
+          type: file
+          required: true
+      responses:
+        200:
+          description: Resume uploaded
+        400:
+          description: Invalid file
+
+  /api/drives:
+    get:
+      tags:
+        - Student
+      summary: List approved drives with optional filters
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: q
+          type: string
+        - in: query
+          name: department
+          type: string
+        - in: query
+          name: min_cgpa
+          type: number
+      responses:
+        200:
+          description: List of approved drives
+
+  /api/drives/{drive_id}:
+    get:
+      tags:
+        - Student
+      summary: Get drive detail
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Drive detail
+        404:
+          description: Drive not found
+
+  /api/student/applications:
+    post:
+      tags:
+        - Student
+      summary: Apply to a drive with eligibility check
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - drive_id
+            properties:
+              drive_id:
+                type: integer
+      responses:
+        201:
+          description: Application submitted
+        409:
+          description: Already applied
+        422:
+          description: Eligibility check failed
+        404:
+          description: Drive not found
+    get:
+      tags:
+        - Student
+      summary: Get own application history
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: List of applications
   
