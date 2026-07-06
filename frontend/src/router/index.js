@@ -79,6 +79,30 @@ const routes = [
     meta: { requiresAuth: true, role: 'student' }
   },
   {
+    path: '/student/drives',
+    name: 'student-drives',
+    component: () => import('@/views/student/DriveList.vue'),
+    meta: { requiresAuth: true, role: 'student' }
+  },
+  {
+    path: '/student/drives/:id',
+    name: 'student-drive-detail',
+    component: () => import('@/views/student/DriveDetail.vue'),
+    meta: { requiresAuth: true, role: 'student' }
+  },
+  {
+    path: '/student/applications',
+    name: 'student-applications',
+    component: () => import('@/views/student/ApplicationHistory.vue'),
+    meta: { requiresAuth: true, role: 'student' }
+  },
+  {
+    path: '/student/profile',
+    name: 'student-profile',
+    component: () => import('@/views/student/Profile.vue'),
+    meta: { requiresAuth: true, role: 'student' }
+  },
+  {
     path: '/',
     redirect: '/login'
   },
