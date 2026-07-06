@@ -50,6 +50,15 @@
             <li class="nav-item">
               <RouterLink class="nav-link" to="/student/dashboard">Dashboard</RouterLink>
             </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/student/drives">Drives</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/student/applications">Applications</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/student/profile">Profile</RouterLink>
+            </li>
           </template>
 
           <li class="nav-item">
