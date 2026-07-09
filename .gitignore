@@ -17,3 +17,9 @@ __pycache__/
 backend/instance/
 backend/__pycache__/
 backend/models/__pycache__/
+
+# Redis dump
+dump.rdb
+.redis-data/
+celerybeat-schedule
+celerybeat.pid
