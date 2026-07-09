@@ -54,6 +54,8 @@ def create_app():
     app.register_blueprint(company_bp)
     from routes.student import student_bp
     app.register_blueprint(student_bp)
+    from routes.exports import exports_bp
+    app.register_blueprint(exports_bp)
 
     with app.app_context():
         os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
