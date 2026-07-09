@@ -6,6 +6,9 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+backend/routes/__pycache__/
+backend/services/__pycache__/
+backend/tasks/__pycache__/
 
 # Environment secrets
 .env
@@ -23,3 +26,7 @@ dump.rdb
 .redis-data/
 celerybeat-schedule
 celerybeat.pid
+
+# Generated export files
+backend/static/exports/*.csv
+backend/static/uploads/resumes/*
