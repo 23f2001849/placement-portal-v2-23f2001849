@@ -21,18 +21,23 @@ def get_student_profile():
 @student_bp.route('/api/student/dashboard', methods=['GET'])
 @role_required('student')
 def dashboard():
+    from cache.helpers import cache_get, cache_set
     student = get_student_profile()
 
-    approved_drives = PlacementDrive.query.filter_by(status='approved').count()
-    my_applications = Application.query.filter_by(student_id=student.id).count()
-    my_placements = Placement.query.filter_by(student_id=student.id).count()
+    cache_key = f'student_dashboard:{student.id}'
+    cached = cache_get(cache_key)
+    if cached:
+        return jsonify(cached), 200
 
-    return jsonify({
+    result = {
         'student_name': student.name,
-        'approved_drives': approved_drives,
-        'my_applications': my_applications,
-        'my_placements': my_placements
-    }), 200
+        'approved_drives': PlacementDrive.query.filter_by(status='approved').count(),
+        'my_applications': Application.query.filter_by(student_id=student.id).count(),
+        'my_placements': Placement.query.filter_by(student_id=student.id).count()
+    }
+
+    cache_set(cache_key, result, ttl=60)
+    return jsonify(result), 200
 
 
 @student_bp.route('/api/student/profile', methods=['GET'])
@@ -76,9 +81,17 @@ def update_profile():
 @student_bp.route('/api/drives', methods=['GET'])
 @role_required('student')
 def list_drives():
+    from cache.helpers import cache_get, cache_set
+
     q = request.args.get('q', '').strip()
     department = request.args.get('department', '').strip()
     min_cgpa = request.args.get('min_cgpa', type=float)
+
+    cache_key = f'drives_list:{q}:{department}:{min_cgpa}'
+
+    cached = cache_get(cache_key)
+    if cached:
+        return jsonify(cached), 200
 
     query = PlacementDrive.query.filter_by(status='approved')
 
@@ -89,12 +102,10 @@ def list_drives():
                 PlacementDrive.location.ilike(f'%{q}%')
             )
         )
-
     if department:
         query = query.filter(
             PlacementDrive.allowed_departments.ilike(f'%{department}%')
         )
-
     if min_cgpa is not None:
         query = query.filter(
             db.or_(
@@ -104,8 +115,7 @@ def list_drives():
         )
 
     drives = query.all()
-
-    return jsonify([{
+    result = [{
         'id': d.id,
         'job_title': d.job_title,
         'company_name': d.company.name,
@@ -115,7 +125,10 @@ def list_drives():
         'allowed_departments': d.allowed_departments,
         'application_deadline': d.application_deadline.isoformat() if d.application_deadline else None,
         'applicant_count': d.applications.count()
-    } for d in drives]), 200
+    } for d in drives]
+
+    cache_set(cache_key, result, ttl=60)
+    return jsonify(result), 200
 
 
 @student_bp.route('/api/drives/<int:drive_id>', methods=['GET'])

@@ -105,8 +105,10 @@ def create_drive():
     db.session.add(drive)
     db.session.commit()
 
-    return jsonify({'message': 'Drive created successfully', 'drive_id': drive.id}), 201
+    from cache.helpers import cache_delete_pattern
+    cache_delete_pattern('drives_list:*')
 
+    return jsonify({'message': 'Drive created successfully', 'drive_id': drive.id}), 201
 
 @company_bp.route('/api/company/drives', methods=['GET'])
 @approved_company_required
@@ -161,8 +163,9 @@ def edit_drive(drive_id):
         if field in data:
             setattr(drive, field, data[field])
     db.session.commit()
+    from cache.helpers import cache_delete_pattern
+    cache_delete_pattern('drives_list:*')
     return jsonify({'message': 'Drive updated successfully'}), 200
-
 
 @company_bp.route('/api/company/drives/<int:drive_id>/close', methods=['PUT'])
 @approved_company_required
@@ -178,8 +181,9 @@ def close_drive(drive_id):
 
     drive.status = 'closed'
     db.session.commit()
+    from cache.helpers import cache_delete_pattern
+    cache_delete_pattern('drives_list:*')
     return jsonify({'message': 'Drive closed'}), 200
-
 
 @company_bp.route('/api/company/drives/<int:drive_id>/applications', methods=['GET'])
 @approved_company_required
