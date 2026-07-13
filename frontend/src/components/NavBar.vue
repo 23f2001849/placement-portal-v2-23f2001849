@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar px-3">
     <RouterLink class="navbar-brand" to="/">Placement Portal V2</RouterLink>
 
     <button

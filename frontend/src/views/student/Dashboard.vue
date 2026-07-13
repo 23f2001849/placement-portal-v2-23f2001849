@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-4">Student Dashboard</h3>
+    <h3 class="page-title">Student Dashboard</h3>
 
     <div v-if="loading" class="text-center mt-4">
       <div class="spinner-border" role="status"></div>

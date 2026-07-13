@@ -8,7 +8,7 @@
       <div v-else-if="error" class="alert alert-danger">{{ error }}</div>
 
       <div v-else>
-        <h3 class="mb-1">{{ drive.job_title }}</h3>
+        <h3 class="page-title">{{ drive.job_title }}</h3>
         <h5 class="text-muted mb-4">{{ drive.company_name }}</h5>
 
         <table class="table table-bordered mb-4">

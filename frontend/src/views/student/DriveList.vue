@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-4">Placement Drives</h3>
+    <h3 class="page-title">Placement Drives</h3>
 
     <div class="row g-2 mb-3">
       <div class="col-md-4">

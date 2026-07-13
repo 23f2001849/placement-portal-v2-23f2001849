@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <h3 class="mb-4">Company Profile</h3>
+      <h3 class="page-title">Company Profile</h3>
 
       <div v-if="loading" class="text-center mt-4">
         <div class="spinner-border" role="status"></div>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-4">My Applications</h3>
+    <h3 class="page-title">My Applications</h3>
 
     <div v-if="loading" class="text-center mt-4">
       <div class="spinner-border" role="status"></div>

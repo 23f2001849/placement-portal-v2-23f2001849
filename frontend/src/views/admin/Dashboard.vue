@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-4">Admin Dashboard</h3>
+    <h3 class="page-title">Admin Dashboard</h3>
 
     <div v-if="loading" class="text-center mt-5">
       <div class="spinner-border" role="status"></div>

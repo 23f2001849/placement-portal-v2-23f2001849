@@ -50,6 +50,7 @@
               type="password"
               class="form-control"
               placeholder="Enter password"
+              @keyup.enter="handleRegister"
             />
           </div>
 
@@ -114,9 +115,11 @@ async function handleRegister() {
     })
 
     if (role.value === 'student') {
-      successMessage.value = 'Registration successful! You can now login.'
+      successMessage.value = 'Registration successful! Redirecting to login...'
+      setTimeout(() => router.push({ name: 'login' }), 1500)
     } else {
       successMessage.value = 'Registration successful! Wait for admin approval before logging in.'
+      setTimeout(() => router.push({ name: 'login' }), 2500)
     }
 
     name.value = ''

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-4">Manage Drives</h3>
+    <h3 class="page-title">Manage Drives</h3>
 
     <div class="mb-3">
       <select v-model="statusFilter" class="form-select w-auto d-inline-block me-2">

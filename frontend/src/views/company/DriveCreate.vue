@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <h3 class="mb-4">Create New Drive</h3>
+      <h3 class="page-title">Create New Drive</h3>
 
       <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
       <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>

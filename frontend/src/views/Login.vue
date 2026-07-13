@@ -26,6 +26,7 @@
               type="password"
               class="form-control"
               placeholder="Enter your password"
+              @keyup.enter="handleLogin"
             />
           </div>
 
