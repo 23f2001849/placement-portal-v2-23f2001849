@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, send_from_directory
 from extensions import db, jwt, mail
 import models
 from models import User, CompanyProfile, StudentProfile, PlacementDrive, Application, Placement, NotificationLog, ExportJob
@@ -56,6 +56,14 @@ def create_app():
     app.register_blueprint(student_bp)
     from routes.exports import exports_bp
     app.register_blueprint(exports_bp)
+
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_vue(path):
+        dist_dir = os.path.join(app.root_path, 'static', 'dist')
+        if path and os.path.exists(os.path.join(dist_dir, path)):
+            return send_from_directory(dist_dir, path)
+        return send_from_directory(dist_dir, 'index.html')
 
     with app.app_context():
         os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
