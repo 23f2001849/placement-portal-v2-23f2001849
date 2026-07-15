@@ -27,10 +27,12 @@ def export_applications_csv(export_job_id):
         filename = f"{export_job_id}.csv"
         filepath = os.path.join(export_dir, filename)
 
+        student = StudentProfile.query.filter_by(
+            user_id=export_job.user_id
+        ).first()
+
         applications = Application.query.filter_by(
-            student_id=StudentProfile.query.filter_by(
-                user_id=export_job.user_id
-            ).first().id
+            student_id=student.id
         ).all()
 
         with open(filepath, 'w', newline='') as csvfile:
@@ -54,6 +56,25 @@ def export_applications_csv(export_job_id):
         db.session.commit()
 
         send_google_chat(f"CSV export ready: export job #{export_job_id} completed.")
+
+        from extensions import mail
+        from flask_mail import Message
+        from models.user import User
+        user = User.query.get(export_job.user_id)
+        if user and user.email:
+            msg = Message(
+                subject="Your Application Export — Placement Portal V2",
+                recipients=[user.email],
+                body=f"Hi {student.name},\n\nYour application export is ready.\nPlease find the CSV attached.\n\nPlacement Portal V2"
+            )
+            with open(filepath, 'rb') as f:
+                msg.attach(
+                    filename=filename,
+                    content_type='text/csv',
+                    data=f.read()
+                )
+            mail.send(msg)
+
         return f"Export completed: {filename}"
 
     except Exception as e:
