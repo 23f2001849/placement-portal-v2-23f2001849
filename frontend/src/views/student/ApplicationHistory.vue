@@ -2,6 +2,20 @@
   <div>
     <h3 class="page-title">My Applications</h3>
 
+    <div class="mb-3 d-flex align-items-center gap-2">
+      <button class="btn btn-outline-primary btn-sm" @click="triggerExport" :disabled="exporting">
+        {{ exporting ? 'Exporting...' : 'Export as CSV' }}
+      </button>
+      <span v-if="exportStatus === 'completed'">
+        <a :href="`/api/exports/${exportId}/download`" class="btn btn-success btn-sm">
+          Download CSV
+        </a>
+      </span>
+      <span v-if="exportStatus === 'failed'" class="text-danger small">
+        Export failed. Try again.
+      </span>
+    </div>
+
     <div v-if="loading" class="text-center mt-4">
       <div class="spinner-border" role="status"></div>
     </div>
@@ -47,6 +61,11 @@ const applications = ref([])
 const loading = ref(true)
 const error = ref('')
 
+const exporting = ref(false)
+const exportId = ref(null)
+const exportStatus = ref('')
+let pollInterval = null
+
 function statusBadge(status) {
   return {
     'badge bg-warning text-dark': status === 'applied',
@@ -66,4 +85,31 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+async function triggerExport() {
+  exporting.value = true
+  exportStatus.value = ''
+  try {
+    const response = await apiClient.post('/api/exports/applications')
+    exportId.value = response.data.export_id
+    pollInterval = setInterval(pollExport, 2000)
+  } catch (e) {
+    exporting.value = false
+    exportStatus.value = 'failed'
+  }
+}
+
+async function pollExport() {
+  try {
+    const response = await apiClient.get(`/api/exports/${exportId.value}`)
+    exportStatus.value = response.data.status
+    if (response.data.status === 'completed' || response.data.status === 'failed') {
+      clearInterval(pollInterval)
+      exporting.value = false
+    }
+  } catch (e) {
+    clearInterval(pollInterval)
+    exporting.value = false
+  }
+}
 </script>
